@@ -7,4 +7,8 @@ spring:
     name: profile-service
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/profile-service?authSource=admin
+      uri: mongodb://admin:secret@localhost:27017/profile-service?authSource=admin
+idp:
+  url: http://localhost:8180
+  client-id: khangdjnh_app
+  client-secret: ZXqSgq273twSMrmx2uRsnWHK7boE8FMS
