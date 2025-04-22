@@ -1,0 +1,20 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /profile
+spring:
+  application:
+    name: profile-service
+  data:
+    mongodb:
+      uri: mongodb://admin:secret@localhost:27017/profile-service?authSource=admin
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/khangdjnh
+
+idp:
+  url: http://localhost:8180
+  client-id: khangdjnh_app
+  client-secret: ZXqSgq273twSMrmx2uRsnWHK7boE8FMS
