@@ -16,10 +16,11 @@ import feign.QueryMap;
 @FeignClient(name = "identity-client", url = "${idp.url}")
 public interface IdentityClient {
     @PostMapping(
-            value = "/realms/devteria/protocol/openid-connect/token",
+            value = "/realms/khangdjnh/protocol/openid-connect/token",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    TokenExchangeResponse exchangeToken(@QueryMap TokenExchangeParam param);
+    TokenExchangeResponse exchangeToken(@QueryMap TokenExchangeParam tokenExchangeParam);
 
-    @PostMapping(value = "/admin/realms/devteria/users", consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> createUser(@RequestHeader("authorization") String token, @RequestBody UserCreationParam param);
+    @PostMapping(value = "/admin/realms/khangdjnh/users", consumes = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> createUser(
+            @RequestHeader("Authorization") String token, @RequestBody UserCreationParam userCreationParam);
 }

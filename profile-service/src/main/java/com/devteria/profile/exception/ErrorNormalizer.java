@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
-import com.devteria.profile.dto.identity.KeyCloakError;
+import com.devteria.profile.dto.identity.KeycloakError;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,17 +28,15 @@ public class ErrorNormalizer {
         errorCodeMap.put("User name is missing", ErrorCode.USERNAME_IS_MISSING);
     }
 
-    public AppException handleKeyCloakException(FeignException exception) {
+    public AppException handleKeycloakException(FeignException exception) {
         try {
-            log.warn("Cannot complete request", exception);
-            var response = objectMapper.readValue(exception.contentUTF8(), KeyCloakError.class);
-
-            if (Objects.nonNull(response.getErrorMessage())
-                    && Objects.nonNull(errorCodeMap.get(response.getErrorMessage()))) {
-                return new AppException(errorCodeMap.get(response.getErrorMessage()));
+            log.warn("Cannot complete request: ", exception);
+            var response = objectMapper.readValue(exception.contentUTF8(), KeycloakError.class);
+            if (Objects.nonNull(response.getMessage()) && Objects.nonNull(errorCodeMap.get(response.getMessage()))) {
+                return new AppException(errorCodeMap.get(response.getMessage()));
             }
         } catch (JsonProcessingException e) {
-            log.error("Cannot deserialize content", e);
+            log.error("Cannot deserialize content: ", e);
         }
 
         return new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);

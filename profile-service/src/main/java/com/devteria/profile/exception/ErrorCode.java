@@ -14,8 +14,10 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     EMAIL_EXISTED(1008, "Email existed, please choose another one", HttpStatus.BAD_REQUEST),
-    USER_EXISTED(1009, "Username existed, please choose another one", HttpStatus.BAD_REQUEST),
-    USERNAME_IS_MISSING(1010, "Please enter username", HttpStatus.BAD_REQUEST),
+    USER_EXISTED(1009, "User existed, please choose another one", HttpStatus.BAD_REQUEST),
+    USERNAME_IS_MISSING(10010, "Please enter username", HttpStatus.BAD_REQUEST),
+    USERNAME_NOT_EXIST(1011, "User not exist in database", HttpStatus.BAD_REQUEST),
+
     USER_NOT_EXISTED(1011, "User not existed", HttpStatus.BAD_REQUEST),
 
     ;
@@ -27,6 +29,6 @@ public enum ErrorCode {
     }
 
     private final int code;
-    private final HttpStatusCode statusCode;
     private final String message;
+    private final HttpStatusCode statusCode;
 }

@@ -7,15 +7,14 @@ spring:
     name: profile-service
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/profile-service?authSource=admin
-
+      uri: mongodb://admin:secret@localhost:27017/profile-service?authSource=admin
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/devteria
+          issuer-uri: http://localhost:8180/realms/khangdjnh
 
 idp:
   url: http://localhost:8180
-  client-id: devteria_app
-  client-secret: jJ1gdXhJbeOXMnqe1A1jnZVmc3WKCTx3
+  client-id: khangdjnh_app
+  client-secret: ZXqSgq273twSMrmx2uRsnWHK7boE8FMS

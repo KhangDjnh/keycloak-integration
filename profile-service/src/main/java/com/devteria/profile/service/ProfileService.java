@@ -1,6 +1,7 @@
 package com.devteria.profile.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.devteria.profile.exception.AppException;
 import com.devteria.profile.exception.ErrorCode;
@@ -44,36 +45,31 @@ public class ProfileService {
     @NonFinal
     String clientSecret;
 
-    public ProfileResponse getMyProfile() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
-
-        var profile = profileRepository.findByUserId(userId).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        return profileMapper.toProfileResponse(profile);
-    }
-
     public List<ProfileResponse> getAllProfiles() {
         var profiles = profileRepository.findAll();
         return profiles.stream().map(profileMapper::toProfileResponse).toList();
     }
+    public ProfileResponse getMyProfile() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        var profile =  profileRepository.findByUserId(userId).orElseThrow(
+                () -> new AppException(ErrorCode.USERNAME_NOT_EXIST));
+        return profileMapper.toProfileResponse(profile);
+    }
 
     public ProfileResponse register(RegistrationRequest request) {
         try {
-            // Create account in KeyCloak
-            // Exchange client Token
+            // Create account in Keycloak
             var token = identityClient.exchangeToken(TokenExchangeParam.builder()
                     .grant_type("client_credentials")
                     .client_id(clientId)
                     .client_secret(clientSecret)
                     .scope("openid")
                     .build());
+            log.info("TokenInfo: {}", token);
+            // Exchange client Token
 
-            log.info("TokenInfo {}", token);
             // Create user with client Token and given info
-
-            // Get userId of keyCloak account
             var creationResponse = identityClient.createUser(
                     "Bearer " + token.getAccessToken(),
                     UserCreationParam.builder()
@@ -85,28 +81,29 @@ public class ProfileService {
                             .emailVerified(false)
                             .credentials(List.of(Credential.builder()
                                     .type("password")
-                                    .temporary(false)
                                     .value(request.getPassword())
+                                    .temporary(false)
                                     .build()))
                             .build());
 
             String userId = extractUserId(creationResponse);
-            log.info("UserId {}", userId);
+            log.info("UserId: {}", userId);
 
+            // Get userId of Keycloak account
             var profile = profileMapper.toProfile(request);
+            // set userId in UserDatabase
             profile.setUserId(userId);
-
             profile = profileRepository.save(profile);
 
             return profileMapper.toProfileResponse(profile);
         } catch (FeignException exception) {
-            throw errorNormalizer.handleKeyCloakException(exception);
+            throw errorNormalizer.handleKeycloakException(exception);
         }
     }
 
-    private String extractUserId(ResponseEntity<?> response) {
-        String location = response.getHeaders().get("Location").getFirst();
-        String[] splitedStr = location.split("/");
-        return splitedStr[splitedStr.length - 1];
+    private String extractUserId(ResponseEntity<?> responseEntity) {
+        String location = Objects.requireNonNull(responseEntity.getHeaders().get("Location")).getFirst();
+        String[] splittedString = location.split("/");
+        return splittedString[splittedString.length - 1];
     }
 }
